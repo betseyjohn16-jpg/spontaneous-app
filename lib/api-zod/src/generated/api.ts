@@ -86,6 +86,37 @@ export const SuggestActivityResponse = zod.object({
 
 
 /**
+ * @summary Get reviews for a restaurant
+ */
+export const GetReviewsQueryParams = zod.object({
+  "restaurantId": zod.coerce.string()
+})
+
+export const GetReviewsResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "restaurantName": zod.string(),
+  "userName": zod.string(),
+  "rating": zod.number(),
+  "text": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const GetReviewsResponse = zod.array(GetReviewsResponseItem)
+
+
+/**
+ * @summary Submit a review for a restaurant
+ */
+export const CreateReviewBody = zod.object({
+  "restaurantId": zod.string(),
+  "restaurantName": zod.string(),
+  "userName": zod.string(),
+  "rating": zod.number(),
+  "text": zod.string()
+})
+
+
+/**
  * @summary Make a restaurant reservation
  */
 export const MakeReservationBody = zod.object({

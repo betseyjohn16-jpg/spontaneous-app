@@ -17,6 +17,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HistoryProvider } from "@/context/HistoryContext";
 import { PreferencesProvider } from "@/context/PreferencesContext";
+import { FavoritesProvider } from "@/context/FavoritesContext";
 
 if (process.env.EXPO_PUBLIC_DOMAIN) {
   setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
@@ -58,13 +59,15 @@ export default function RootLayout() {
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <PreferencesProvider>
-            <HistoryProvider>
-              <GestureHandlerRootView>
-                <KeyboardProvider>
-                  <RootLayoutNav />
-                </KeyboardProvider>
-              </GestureHandlerRootView>
-            </HistoryProvider>
+            <FavoritesProvider>
+              <HistoryProvider>
+                <GestureHandlerRootView>
+                  <KeyboardProvider>
+                    <RootLayoutNav />
+                  </KeyboardProvider>
+                </GestureHandlerRootView>
+              </HistoryProvider>
+            </FavoritesProvider>
           </PreferencesProvider>
         </QueryClientProvider>
       </ErrorBoundary>

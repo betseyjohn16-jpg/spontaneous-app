@@ -14,6 +14,8 @@ tags:
     description: AI-powered spontaneous suggestions
   - name: reservations
     description: Reservation management
+  - name: reviews
+    description: Restaurant reviews
   - name: openai
     description: OpenAI AI chat, image, and audio operations
 paths:
@@ -68,6 +70,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActivityPlan"
+
+  /reviews:
+    get:
+      operationId: getReviews
+      tags: [reviews]
+      summary: Get reviews for a restaurant
+      parameters:
+        - name: restaurantId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review for a restaurant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewInput"
+      responses:
+        "201":
+          description: Created review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
 
   /reservations:
     post:
@@ -224,6 +264,53 @@ paths:
 
 components:
   schemas:
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        restaurantId:
+          type: string
+        restaurantName:
+          type: string
+        userName:
+          type: string
+        rating:
+          type: integer
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - restaurantId
+        - restaurantName
+        - userName
+        - rating
+        - text
+        - createdAt
+
+    CreateReviewInput:
+      type: object
+      properties:
+        restaurantId:
+          type: string
+        restaurantName:
+          type: string
+        userName:
+          type: string
+        rating:
+          type: integer
+        text:
+          type: string
+      required:
+        - restaurantId
+        - restaurantName
+        - userName
+        - rating
+        - text
+
     HealthStatus:
       type: object
       properties:

@@ -5,6 +5,24 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface Review {
+  id: number;
+  restaurantId: string;
+  restaurantName: string;
+  userName: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+}
+
+export interface CreateReviewInput {
+  restaurantId: string;
+  restaurantName: string;
+  userName: string;
+  rating: number;
+  text: string;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -161,4 +179,8 @@ export interface OpenaiImageOutput {
 export interface OpenaiError {
   error: string;
 }
+
+export type GetReviewsParams = {
+restaurantId: string;
+};
 

@@ -8,6 +8,8 @@
 
 export * from './activityEvent';
 export * from './activityPlan';
+export * from './createReviewInput';
+export * from './getReviewsParams';
 export * from './healthStatus';
 export * from './openaiConversation';
 export * from './openaiConversationInput';
@@ -21,6 +23,7 @@ export * from './openaiMessageInput';
 export * from './reservationConfirmation';
 export * from './reservationRequest';
 export * from './restaurantSuggestion';
+export * from './review';
 export * from './suggestActivityInput';
 export * from './suggestRestaurantInput';
 export * from './suggestRestaurantInputBudget';
