@@ -1,6 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Location from "expo-location";
+import { useAuth, useUser } from "@clerk/expo";
+import { router } from "expo-router";
+import type { Href } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -20,6 +23,7 @@ import {
   ACCESSIBILITY_OPTIONS,
   RADIUS_OPTIONS,
 } from "@/context/PreferencesContext";
+import { useUsage, FREE_LIMIT } from "@/context/UsageContext";
 
 export default function PreferencesScreen() {
   const colors = useColors();
@@ -75,6 +79,9 @@ export default function PreferencesScreen() {
     ]);
   };
 
+  const { isSignedIn, signOut } = useAuth();
+  const { user } = useUser();
+  const { requestsUsed, isSubscribed, subscriptionStatus } = useUsage();
   const activeCount = preferences.allergies.length + preferences.accessibility.length;
 
   return (
@@ -208,6 +215,81 @@ export default function PreferencesScreen() {
             Your preferences are saved locally on your device and shared with AI to find the best spots for you.
           </Text>
         </View>
+
+        <Section title="Account" icon="user" iconColor={colors.purple} colors={colors}>
+          {isSignedIn ? (
+            <View style={{ gap: 12 }}>
+              <View style={[styles.accountRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <View style={[styles.accountAvatar, { backgroundColor: colors.purple + "33" }]}>
+                  <Feather name="user" size={16} color={colors.purple} />
+                </View>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={[styles.accountEmail, { color: colors.foreground }]} numberOfLines={1}>
+                    {user?.primaryEmailAddress?.emailAddress ?? "Signed in"}
+                  </Text>
+                  {isSubscribed ? (
+                    <Text style={[styles.accountSub, { color: colors.success }]}>
+                      Pro · Active
+                    </Text>
+                  ) : subscriptionStatus === "past_due" ? (
+                    <Text style={[styles.accountSub, { color: colors.destructive }]}>
+                      Pro · Payment issue
+                    </Text>
+                  ) : (
+                    <Text style={[styles.accountSub, { color: colors.mutedForeground }]}>
+                      Free · {Math.max(0, FREE_LIMIT - requestsUsed)} picks left
+                    </Text>
+                  )}
+                </View>
+              </View>
+              {!isSubscribed && (
+                <Pressable
+                  style={[styles.upgradeBtn, { backgroundColor: colors.gold }]}
+                  onPress={() => router.push("/paywall" as Href)}
+                >
+                  <Feather name="zap" size={14} color={colors.background} />
+                  <Text style={[styles.upgradeBtnText, { color: colors.background }]}>
+                    Upgrade to Pro · $2.99/mo
+                  </Text>
+                </Pressable>
+              )}
+              <Pressable
+                style={[styles.signOutBtn, { borderColor: colors.border }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  signOut();
+                }}
+              >
+                <Feather name="log-out" size={14} color={colors.mutedForeground} />
+                <Text style={[styles.signOutText, { color: colors.mutedForeground }]}>Sign out</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <View style={{ gap: 10 }}>
+              <Text style={[styles.hint, { color: colors.mutedForeground }]}>
+                {requestsUsed >= FREE_LIMIT
+                  ? "You've used all your free picks. Subscribe for unlimited access."
+                  : `${FREE_LIMIT - requestsUsed} free pick${FREE_LIMIT - requestsUsed !== 1 ? "s" : ""} remaining before a subscription is required.`}
+              </Text>
+              <Pressable
+                style={[styles.upgradeBtn, { backgroundColor: colors.gold }]}
+                onPress={() => router.push("/paywall" as Href)}
+              >
+                <Feather name="zap" size={14} color={colors.background} />
+                <Text style={[styles.upgradeBtnText, { color: colors.background }]}>
+                  Get Spontaneous Pro
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.signOutBtn, { borderColor: colors.border }]}
+                onPress={() => router.push("/(auth)/sign-in" as Href)}
+              >
+                <Feather name="log-in" size={14} color={colors.mutedForeground} />
+                <Text style={[styles.signOutText, { color: colors.mutedForeground }]}>Sign in</Text>
+              </Pressable>
+            </View>
+          )}
+        </Section>
       </ScrollView>
     </View>
   );
@@ -338,4 +420,12 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   infoText: { fontSize: 12, fontFamily: "Inter_400Regular", flex: 1, lineHeight: 17 },
+  accountRow: { flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: 14, borderWidth: 1 },
+  accountAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
+  accountEmail: { fontSize: 14, fontFamily: "Inter_500Medium" },
+  accountSub: { fontSize: 12, fontFamily: "Inter_400Regular" },
+  upgradeBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 14 },
+  upgradeBtnText: { fontSize: 14, fontFamily: "Inter_700Bold" },
+  signOutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 12, borderRadius: 12, borderWidth: 1 },
+  signOutText: { fontSize: 13, fontFamily: "Inter_400Regular" },
 });

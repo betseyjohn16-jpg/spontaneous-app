@@ -2,6 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Location from "expo-location";
 import { router } from "expo-router";
+import type { Href } from "expo-router";
 import { useSuggestActivity, useSuggestRestaurant } from "@workspace/api-client-react";
 import React, { useState } from "react";
 import {
@@ -17,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { useHistory } from "@/context/HistoryContext";
 import { usePreferences } from "@/context/PreferencesContext";
+import { useUsage } from "@/context/UsageContext";
 import type { RestaurantSuggestion, ActivityPlan } from "@/context/HistoryContext";
 
 export default function DiscoverScreen() {
@@ -28,6 +30,7 @@ export default function DiscoverScreen() {
 
   const { mutateAsync: suggestRestaurant } = useSuggestRestaurant();
   const { mutateAsync: suggestActivity } = useSuggestActivity();
+  const { canMakeRequest, incrementUsage } = useUsage();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : 0;
@@ -54,12 +57,17 @@ export default function DiscoverScreen() {
 
   const handleRestaurant = async () => {
     if (loadingType) return;
+    if (!canMakeRequest) {
+      router.push("/paywall" as Href);
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setLoadingType("restaurant");
     try {
       const coords = await getLocationCoords();
       const data = await suggestRestaurant({ body: buildPrefsPayload(coords) });
       await addToHistory("restaurant", data as RestaurantSuggestion);
+      await incrementUsage();
       router.push({ pathname: "/restaurant", params: { data: JSON.stringify(data) } });
     } catch (e) {
       console.error(e);
@@ -70,12 +78,17 @@ export default function DiscoverScreen() {
 
   const handleActivity = async () => {
     if (loadingType) return;
+    if (!canMakeRequest) {
+      router.push("/paywall" as Href);
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setLoadingType("activity");
     try {
       const coords = await getLocationCoords();
       const data = await suggestActivity({ body: buildPrefsPayload(coords) });
       await addToHistory("activity", data as ActivityPlan);
+      await incrementUsage();
       router.push({ pathname: "/activity", params: { data: JSON.stringify(data) } });
     } catch (e) {
       console.error(e);
