@@ -24,3 +24,4 @@ export * from './restaurantSuggestion';
 export * from './suggestActivityInput';
 export * from './suggestRestaurantInput';
 export * from './suggestRestaurantInputBudget';
+export * from './userPreferences';

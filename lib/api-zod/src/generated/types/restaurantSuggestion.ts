@@ -22,4 +22,8 @@ export interface RestaurantSuggestion {
   specialtyDish: string;
   reservationTime: string;
   waitTime: string;
+  latitude: number;
+  longitude: number;
+  distanceMiles?: number;
+  accessibilityFeatures?: string[];
 }

@@ -232,6 +232,29 @@ components:
       required:
         - status
 
+    UserPreferences:
+      type: object
+      properties:
+        allergies:
+          type: array
+          items:
+            type: string
+          description: Dietary restrictions and allergies
+        accessibility:
+          type: array
+          items:
+            type: string
+          description: Accessibility accommodations needed
+        radiusMiles:
+          type: number
+          description: Search radius in miles
+        userLat:
+          type: number
+          description: User latitude
+        userLng:
+          type: number
+          description: User longitude
+
     SuggestRestaurantInput:
       type: object
       properties:
@@ -241,6 +264,20 @@ components:
         budget:
           type: string
           enum: [cheap, moderate, expensive, luxury]
+        allergies:
+          type: array
+          items:
+            type: string
+        accessibility:
+          type: array
+          items:
+            type: string
+        radiusMiles:
+          type: number
+        userLat:
+          type: number
+        userLng:
+          type: number
 
     RestaurantSuggestion:
       type: object
@@ -275,6 +312,16 @@ components:
           type: string
         waitTime:
           type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        distanceMiles:
+          type: number
+        accessibilityFeatures:
+          type: array
+          items:
+            type: string
       required:
         - id
         - name
@@ -291,6 +338,8 @@ components:
         - specialtyDish
         - reservationTime
         - waitTime
+        - latitude
+        - longitude
 
     SuggestActivityInput:
       type: object
@@ -298,6 +347,20 @@ components:
         mood:
           type: string
           description: Optional mood or vibe preference
+        allergies:
+          type: array
+          items:
+            type: string
+        accessibility:
+          type: array
+          items:
+            type: string
+        radiusMiles:
+          type: number
+        userLat:
+          type: number
+        userLng:
+          type: number
 
     ActivityEvent:
       type: object
@@ -316,6 +379,12 @@ components:
           type: string
         category:
           type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        distanceMiles:
+          type: number
       required:
         - time
         - title
@@ -324,6 +393,8 @@ components:
         - estimatedCost
         - duration
         - category
+        - latitude
+        - longitude
 
     ActivityPlan:
       type: object

@@ -11,4 +11,9 @@ export interface SuggestRestaurantInput {
   /** Optional cuisine preference */
   cuisine?: string;
   budget?: SuggestRestaurantInputBudget;
+  allergies?: string[];
+  accessibility?: string[];
+  radiusMiles?: number;
+  userLat?: number;
+  userLng?: number;
 }

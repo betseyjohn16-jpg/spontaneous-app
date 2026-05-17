@@ -9,6 +9,19 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface UserPreferences {
+  /** Dietary restrictions and allergies */
+  allergies?: string[];
+  /** Accessibility accommodations needed */
+  accessibility?: string[];
+  /** Search radius in miles */
+  radiusMiles?: number;
+  /** User latitude */
+  userLat?: number;
+  /** User longitude */
+  userLng?: number;
+}
+
 export type SuggestRestaurantInputBudget = typeof SuggestRestaurantInputBudget[keyof typeof SuggestRestaurantInputBudget];
 
 
@@ -23,6 +36,11 @@ export interface SuggestRestaurantInput {
   /** Optional cuisine preference */
   cuisine?: string;
   budget?: SuggestRestaurantInputBudget;
+  allergies?: string[];
+  accessibility?: string[];
+  radiusMiles?: number;
+  userLat?: number;
+  userLng?: number;
 }
 
 export interface RestaurantSuggestion {
@@ -41,11 +59,20 @@ export interface RestaurantSuggestion {
   specialtyDish: string;
   reservationTime: string;
   waitTime: string;
+  latitude: number;
+  longitude: number;
+  distanceMiles?: number;
+  accessibilityFeatures?: string[];
 }
 
 export interface SuggestActivityInput {
   /** Optional mood or vibe preference */
   mood?: string;
+  allergies?: string[];
+  accessibility?: string[];
+  radiusMiles?: number;
+  userLat?: number;
+  userLng?: number;
 }
 
 export interface ActivityEvent {
@@ -56,6 +83,9 @@ export interface ActivityEvent {
   estimatedCost: number;
   duration: string;
   category: string;
+  latitude: number;
+  longitude: number;
+  distanceMiles?: number;
 }
 
 export interface ActivityPlan {

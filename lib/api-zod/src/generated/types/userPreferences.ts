@@ -6,12 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface SuggestActivityInput {
-  /** Optional mood or vibe preference */
-  mood?: string;
+export interface UserPreferences {
+  /** Dietary restrictions and allergies */
   allergies?: string[];
+  /** Accessibility accommodations needed */
   accessibility?: string[];
+  /** Search radius in miles */
   radiusMiles?: number;
+  /** User latitude */
   userLat?: number;
+  /** User longitude */
   userLng?: number;
 }

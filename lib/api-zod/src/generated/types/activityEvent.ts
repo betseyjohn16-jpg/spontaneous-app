@@ -14,4 +14,7 @@ export interface ActivityEvent {
   estimatedCost: number;
   duration: string;
   category: string;
+  latitude: number;
+  longitude: number;
+  distanceMiles?: number;
 }

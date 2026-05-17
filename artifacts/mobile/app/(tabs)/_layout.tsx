@@ -20,6 +20,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "clock", selected: "clock.fill" }} />
         <Label>History</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="preferences">
+        <Icon sf={{ default: "slider.horizontal.3", selected: "slider.horizontal.3" }} />
+        <Label>Preferences</Label>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
@@ -49,11 +53,9 @@ function ClassicTabLayout() {
           isIOS ? (
             <BlurView
               intensity={80}
-              tint={isDark ? "dark" : "dark"}
+              tint="dark"
               style={StyleSheet.absoluteFill}
             />
-          ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
           ) : (
             <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
           ),
@@ -80,6 +82,18 @@ function ClassicTabLayout() {
               <SymbolView name="clock" tintColor={color} size={24} />
             ) : (
               <Feather name="clock" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="preferences"
+        options={{
+          title: "Preferences",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="slider.horizontal.3" tintColor={color} size={24} />
+            ) : (
+              <Feather name="sliders" size={22} color={color} />
             ),
         }}
       />

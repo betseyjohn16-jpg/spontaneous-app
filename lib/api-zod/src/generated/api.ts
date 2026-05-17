@@ -22,7 +22,12 @@ export const HealthCheckResponse = zod.object({
  */
 export const SuggestRestaurantBody = zod.object({
   "cuisine": zod.string().optional().describe('Optional cuisine preference'),
-  "budget": zod.enum(['cheap', 'moderate', 'expensive', 'luxury']).optional()
+  "budget": zod.enum(['cheap', 'moderate', 'expensive', 'luxury']).optional(),
+  "allergies": zod.array(zod.string()).optional(),
+  "accessibility": zod.array(zod.string()).optional(),
+  "radiusMiles": zod.number().optional(),
+  "userLat": zod.number().optional(),
+  "userLng": zod.number().optional()
 })
 
 export const SuggestRestaurantResponse = zod.object({
@@ -40,7 +45,11 @@ export const SuggestRestaurantResponse = zod.object({
   "ambiance": zod.string(),
   "specialtyDish": zod.string(),
   "reservationTime": zod.string(),
-  "waitTime": zod.string()
+  "waitTime": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceMiles": zod.number().optional(),
+  "accessibilityFeatures": zod.array(zod.string()).optional()
 })
 
 
@@ -48,7 +57,12 @@ export const SuggestRestaurantResponse = zod.object({
  * @summary Get a random day activity plan
  */
 export const SuggestActivityBody = zod.object({
-  "mood": zod.string().optional().describe('Optional mood or vibe preference')
+  "mood": zod.string().optional().describe('Optional mood or vibe preference'),
+  "allergies": zod.array(zod.string()).optional(),
+  "accessibility": zod.array(zod.string()).optional(),
+  "radiusMiles": zod.number().optional(),
+  "userLat": zod.number().optional(),
+  "userLng": zod.number().optional()
 })
 
 export const SuggestActivityResponse = zod.object({
@@ -63,7 +77,10 @@ export const SuggestActivityResponse = zod.object({
   "location": zod.string(),
   "estimatedCost": zod.number(),
   "duration": zod.string(),
-  "category": zod.string()
+  "category": zod.string(),
+  "latitude": zod.number(),
+  "longitude": zod.number(),
+  "distanceMiles": zod.number().optional()
 }))
 })
 
