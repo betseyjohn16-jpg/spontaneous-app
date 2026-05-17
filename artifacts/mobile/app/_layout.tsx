@@ -7,13 +7,12 @@ import {
 } from "@expo-google-fonts/inter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setBaseUrl } from "@workspace/api-client-react";
-import { ClerkProvider, ClerkLoaded } from "@clerk/expo";
+import { ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -29,7 +28,7 @@ if (process.env.EXPO_PUBLIC_DOMAIN) {
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 const proxyUrl = process.env.EXPO_PUBLIC_CLERK_PROXY_URL || undefined;
 
 function RootLayoutNav() {
@@ -53,35 +52,42 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
-  useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
+  const [fontTimedOut, setFontTimedOut] = useState(false);
 
-  if (!fontsLoaded && !fontError) return null;
+  useEffect(() => {
+    const timer = setTimeout(() => setFontTimedOut(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const fontsReady = fontsLoaded || !!fontError || fontTimedOut;
+
+  useEffect(() => {
+    if (fontsReady) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsReady]);
+
+  if (!fontsReady) return null;
 
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache} proxyUrl={proxyUrl}>
-      <ClerkLoaded>
-        <SafeAreaProvider>
-          <ErrorBoundary>
-            <QueryClientProvider client={queryClient}>
-              <PreferencesProvider>
-                <FavoritesProvider>
-                  <HistoryProvider>
-                    <UsageProvider>
-                      <GestureHandlerRootView>
-                          <RootLayoutNav />
-                      </GestureHandlerRootView>
-                    </UsageProvider>
-                  </HistoryProvider>
-                </FavoritesProvider>
-              </PreferencesProvider>
-            </QueryClientProvider>
-          </ErrorBoundary>
-        </SafeAreaProvider>
-      </ClerkLoaded>
+      <SafeAreaProvider>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <PreferencesProvider>
+              <FavoritesProvider>
+                <HistoryProvider>
+                  <UsageProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <RootLayoutNav />
+                    </GestureHandlerRootView>
+                  </UsageProvider>
+                </HistoryProvider>
+              </FavoritesProvider>
+            </PreferencesProvider>
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </SafeAreaProvider>
     </ClerkProvider>
   );
 }
