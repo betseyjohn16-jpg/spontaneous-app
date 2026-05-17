@@ -1,16 +1,18 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { scheduleReservationReminder } from "@/utils/notifications";
 
 interface ReservationConfirmation {
   confirmationCode: string;
   restaurantName: string;
   partySize: number;
   reservationTime: string;
+  attire?: string;
   message: string;
 }
 
@@ -27,6 +29,8 @@ export default function ReservationScreen() {
   const opacity = useRef(new Animated.Value(0)).current;
   const slideUp = useRef(new Animated.Value(30)).current;
 
+  const [reminderScheduled, setReminderScheduled] = useState<boolean | null>(null);
+
   useEffect(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Animated.parallel([
@@ -34,6 +38,14 @@ export default function ReservationScreen() {
       Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }),
       Animated.spring(slideUp, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }),
     ]).start();
+
+    scheduleReservationReminder(
+      confirmation.restaurantName,
+      confirmation.reservationTime,
+      confirmation.attire
+    ).then((id) => {
+      setReminderScheduled(id !== null);
+    });
   }, []);
 
   return (
@@ -68,6 +80,36 @@ export default function ReservationScreen() {
             <DetailRow icon="users" label="Party Size" value={`${confirmation.partySize} ${confirmation.partySize === 1 ? "guest" : "guests"}`} colors={colors} />
           </Animated.View>
 
+          {reminderScheduled !== null && (
+            <Animated.View
+              style={[
+                styles.reminderBadge,
+                {
+                  backgroundColor: reminderScheduled ? colors.success + "18" : colors.muted,
+                  borderColor: reminderScheduled ? colors.success + "44" : colors.border,
+                  opacity,
+                  transform: [{ translateY: slideUp }],
+                },
+              ]}
+            >
+              <Feather
+                name={reminderScheduled ? "bell" : "bell-off"}
+                size={14}
+                color={reminderScheduled ? colors.success : colors.mutedForeground}
+              />
+              <Text
+                style={[
+                  styles.reminderText,
+                  { color: reminderScheduled ? colors.success : colors.mutedForeground },
+                ]}
+              >
+                {reminderScheduled
+                  ? "Reminder set for 30 min before"
+                  : "Notifications are off — no reminder set"}
+              </Text>
+            </Animated.View>
+          )}
+
           <Animated.View style={{ opacity, transform: [{ translateY: slideUp }] }}>
             <Text style={[styles.message, { color: colors.mutedForeground }]}>{confirmation.message}</Text>
           </Animated.View>
@@ -99,7 +141,7 @@ function DetailRow({ icon, label, value, colors }: { icon: keyof typeof Feather.
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24 },
   closeBtn: { alignSelf: "flex-end", width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", marginTop: 16 },
-  content: { flex: 1, alignItems: "center", justifyContent: "center", gap: 24 },
+  content: { flex: 1, alignItems: "center", justifyContent: "center", gap: 20 },
   checkCircle: { width: 100, height: 100, borderRadius: 50, alignItems: "center", justifyContent: "center" },
   confirmedLabel: { fontSize: 14, fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 1 },
   restaurantName: { fontSize: 26, fontFamily: "Inter_700Bold", textAlign: "center" },
@@ -112,6 +154,8 @@ const styles = StyleSheet.create({
   detailLabel: { fontSize: 14, fontFamily: "Inter_400Regular" },
   detailValue: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
   divider: { height: 1 },
+  reminderBadge: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 14, borderWidth: 1 },
+  reminderText: { fontSize: 13, fontFamily: "Inter_500Medium" },
   message: { fontSize: 13, fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 19, paddingHorizontal: 8 },
   doneBtn: { padding: 18, borderRadius: 18, alignItems: "center", marginBottom: 8 },
   doneBtnText: { fontSize: 16, fontFamily: "Inter_700Bold" },
