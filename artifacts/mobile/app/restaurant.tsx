@@ -79,8 +79,9 @@ export default function RestaurantScreen() {
   const { mutateAsync: suggestRestaurant, isPending: spinning } = useSuggestRestaurant();
   const { mutateAsync: submitReview, isPending: submittingReview } = useCreateReview();
   const { data: reviews, refetch: refetchReviews } = useGetReviews(
-    { params: { restaurantId: restaurant.id } },
-    { enabled: !!restaurant.id }
+    { restaurantId: restaurant.id },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { query: { enabled: !!restaurant.id } as any }
   );
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
@@ -91,7 +92,7 @@ export default function RestaurantScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     try {
       const confirmation = await makeReservation({
-        body: {
+        data: {
           restaurantName: restaurant.name,
           restaurantId: restaurant.id,
           partySize,
@@ -116,7 +117,7 @@ export default function RestaurantScreen() {
         }
       }
       const data = await suggestRestaurant({
-        body: {
+        data: {
           allergies: preferences.allergies.length > 0 ? preferences.allergies : undefined,
           accessibility: preferences.accessibility.length > 0 ? preferences.accessibility : undefined,
           radiusMiles: preferences.radiusMiles,
@@ -135,7 +136,7 @@ export default function RestaurantScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await submitReview({
-        body: {
+        data: {
           restaurantId: restaurant.id,
           restaurantName: restaurant.name,
           userName: reviewName.trim(),

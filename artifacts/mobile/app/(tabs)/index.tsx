@@ -65,7 +65,7 @@ export default function DiscoverScreen() {
     setLoadingType("restaurant");
     try {
       const coords = await getLocationCoords();
-      const data = await suggestRestaurant({ body: buildPrefsPayload(coords) });
+      const data = await suggestRestaurant({ data: buildPrefsPayload(coords) });
       await addToHistory("restaurant", data as RestaurantSuggestion);
       await incrementUsage();
       router.push({ pathname: "/restaurant", params: { data: JSON.stringify(data) } });
@@ -86,7 +86,7 @@ export default function DiscoverScreen() {
     setLoadingType("activity");
     try {
       const coords = await getLocationCoords();
-      const data = await suggestActivity({ body: buildPrefsPayload(coords) });
+      const data = await suggestActivity({ data: buildPrefsPayload(coords) });
       await addToHistory("activity", data as ActivityPlan);
       await incrementUsage();
       router.push({ pathname: "/activity", params: { data: JSON.stringify(data) } });

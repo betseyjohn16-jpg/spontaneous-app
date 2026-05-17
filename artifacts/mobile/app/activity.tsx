@@ -121,7 +121,7 @@ export default function ActivityScreen() {
         }
       }
       const data = await suggestActivity({
-        body: {
+        data: {
           allergies: preferences.allergies.length > 0 ? preferences.allergies : undefined,
           accessibility: preferences.accessibility.length > 0 ? preferences.accessibility : undefined,
           radiusMiles: preferences.radiusMiles,

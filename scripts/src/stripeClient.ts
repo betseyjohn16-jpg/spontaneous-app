@@ -18,7 +18,7 @@ async function getCredentials(): Promise<{ secretKey: string }> {
   const resp = await fetch(url.toString(), {
     headers: { Accept: "application/json", "X-Replit-Token": xReplitToken },
   });
-  const data = await resp.json();
+  const data = await resp.json() as { items?: Array<{ settings?: { secret?: string } }> };
   const secretKey = data.items?.[0]?.settings?.secret;
   if (!secretKey) throw new Error("Stripe secret key not found.");
   return { secretKey };
