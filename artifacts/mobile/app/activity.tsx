@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import type { ActivityPlan, ActivityEvent } from "@/context/HistoryContext";
+import { shareText, formatActivityMessage } from "@/utils/share";
 
 const CATEGORY_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   Food: "coffee",
@@ -35,7 +36,15 @@ const CATEGORY_COLORS: Record<string, string> = {
   Adventure: "#E67E22",
 };
 
-function EventCard({ event, isLast, colors }: { event: ActivityEvent; isLast: boolean; colors: ReturnType<typeof useColors> }) {
+function EventCard({
+  event,
+  isLast,
+  colors,
+}: {
+  event: ActivityEvent & { distanceMiles?: number };
+  isLast: boolean;
+  colors: ReturnType<typeof useColors>;
+}) {
   const iconName = CATEGORY_ICONS[event.category] ?? "circle";
   const catColor = CATEGORY_COLORS[event.category] ?? colors.mutedForeground;
 
@@ -58,17 +67,29 @@ function EventCard({ event, isLast, colors }: { event: ActivityEvent; isLast: bo
         <View style={styles.eventMeta}>
           <View style={styles.metaItem}>
             <Feather name="map-pin" size={11} color={colors.mutedForeground} />
-            <Text style={[styles.metaText, { color: colors.mutedForeground }]} numberOfLines={1}>{event.location}</Text>
+            <Text style={[styles.metaText, { color: colors.mutedForeground }]} numberOfLines={1}>
+              {event.location}
+            </Text>
           </View>
           <View style={styles.metaItem}>
             <Feather name="clock" size={11} color={colors.mutedForeground} />
             <Text style={[styles.metaText, { color: colors.mutedForeground }]}>{event.duration}</Text>
           </View>
-          {event.estimatedCost > 0 ? (
-            <Text style={[styles.eventCost, { color: colors.gold }]}>${event.estimatedCost}</Text>
-          ) : (
-            <Text style={[styles.eventCost, { color: colors.success }]}>Free</Text>
-          )}
+          <View style={styles.metaRight}>
+            {event.estimatedCost > 0 ? (
+              <Text style={[styles.eventCost, { color: colors.gold }]}>${event.estimatedCost}</Text>
+            ) : (
+              <Text style={[styles.eventCost, { color: colors.success }]}>Free</Text>
+            )}
+            {event.distanceMiles !== undefined && (
+              <View style={styles.distanceTag}>
+                <Feather name="navigation" size={9} color={colors.gold} />
+                <Text style={[styles.distanceTagText, { color: colors.gold }]}>
+                  {event.distanceMiles.toFixed(1)} mi
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -79,10 +100,16 @@ export default function ActivityScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ data: string }>();
-  const plan: ActivityPlan = JSON.parse(params.data ?? "{}");
+  const plan: ActivityPlan & { events: (ActivityEvent & { distanceMiles?: number })[] } =
+    JSON.parse(params.data ?? "{}");
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : insets.bottom;
+
+  const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await shareText(formatActivityMessage(plan), plan.theme);
+  };
 
   return (
     <>
@@ -91,15 +118,26 @@ export default function ActivityScreen() {
         <View style={[styles.navBar, { paddingTop: topPad + 8 }]}>
           <Pressable
             style={[styles.backBtn, { backgroundColor: colors.card }]}
-            onPress={() => { Haptics.selectionAsync(); router.back(); }}
+            onPress={() => {
+              Haptics.selectionAsync();
+              router.back();
+            }}
           >
             <Feather name="arrow-left" size={20} color={colors.foreground} />
           </Pressable>
-          <View style={[styles.costBadge, { backgroundColor: colors.purple + "22" }]}>
-            <Feather name="dollar-sign" size={13} color={colors.purple} />
-            <Text style={[styles.costBadgeText, { color: colors.purple }]}>
-              ~${plan.totalEstimatedCost} total
-            </Text>
+          <View style={styles.navRight}>
+            <View style={[styles.costBadge, { backgroundColor: colors.purple + "22" }]}>
+              <Feather name="dollar-sign" size={13} color={colors.purple} />
+              <Text style={[styles.costBadgeText, { color: colors.purple }]}>
+                ~${plan.totalEstimatedCost} total
+              </Text>
+            </View>
+            <Pressable
+              style={[styles.shareBtn, { backgroundColor: colors.card }]}
+              onPress={handleShare}
+            >
+              <Feather name="share-2" size={18} color={colors.foreground} />
+            </Pressable>
           </View>
         </View>
 
@@ -124,14 +162,32 @@ export default function ActivityScreen() {
             ))}
           </View>
 
-          <View style={[styles.totalCard, { backgroundColor: colors.card, borderColor: colors.gold + "55" }]}>
+          <View
+            style={[
+              styles.totalCard,
+              { backgroundColor: colors.card, borderColor: colors.gold + "55" },
+            ]}
+          >
             <View style={styles.totalRow}>
-              <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>Estimated Total</Text>
-              <Text style={[styles.totalAmount, { color: colors.gold }]}>${plan.totalEstimatedCost}</Text>
+              <Text style={[styles.totalLabel, { color: colors.mutedForeground }]}>
+                Estimated Total
+              </Text>
+              <Text style={[styles.totalAmount, { color: colors.gold }]}>
+                ${plan.totalEstimatedCost}
+              </Text>
             </View>
             <Text style={[styles.totalSub, { color: colors.mutedForeground }]}>
               Prices are approximate and may vary.
             </Text>
+            <Pressable
+              style={[styles.shareCardBtn, { backgroundColor: colors.purple + "22", borderColor: colors.purple + "44" }]}
+              onPress={handleShare}
+            >
+              <Feather name="share-2" size={15} color={colors.purple} />
+              <Text style={[styles.shareCardBtnText, { color: colors.purple }]}>
+                Share this itinerary
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       </View>
@@ -141,9 +197,24 @@ export default function ActivityScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingBottom: 12 },
+  navBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    paddingBottom: 12,
+  },
+  navRight: { flexDirection: "row", alignItems: "center", gap: 10 },
   backBtn: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  costBadge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  shareBtn: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  costBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
   costBadgeText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 24, gap: 24 },
@@ -158,17 +229,38 @@ const styles = StyleSheet.create({
   eventCard: { flex: 1, padding: 14, borderRadius: 16, borderWidth: 1, gap: 8, marginBottom: 12 },
   eventTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   eventTime: { fontSize: 12, fontFamily: "Inter_500Medium" },
-  catBadge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  catBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
   catText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
   eventTitle: { fontSize: 16, fontFamily: "Inter_600SemiBold" },
   eventDesc: { fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 18 },
-  eventMeta: { flexDirection: "row", alignItems: "center", gap: 10, flexWrap: "wrap" },
+  eventMeta: { flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" },
   metaItem: { flexDirection: "row", alignItems: "center", gap: 4, flex: 1 },
   metaText: { fontSize: 11, fontFamily: "Inter_400Regular" },
+  metaRight: { flexDirection: "row", alignItems: "center", gap: 8 },
   eventCost: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
-  totalCard: { padding: 18, borderRadius: 18, borderWidth: 1, gap: 6 },
+  distanceTag: { flexDirection: "row", alignItems: "center", gap: 3 },
+  distanceTagText: { fontSize: 11, fontFamily: "Inter_500Medium" },
+  totalCard: { padding: 18, borderRadius: 18, borderWidth: 1, gap: 10 },
   totalRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   totalLabel: { fontSize: 14, fontFamily: "Inter_500Medium" },
   totalAmount: { fontSize: 26, fontFamily: "Inter_700Bold" },
   totalSub: { fontSize: 12, fontFamily: "Inter_400Regular" },
+  shareCardBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  shareCardBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
 });

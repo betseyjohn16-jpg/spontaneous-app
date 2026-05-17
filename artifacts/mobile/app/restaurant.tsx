@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import type { RestaurantSuggestion } from "@/context/HistoryContext";
+import { shareText, formatRestaurantMessage } from "@/utils/share";
 
 function InfoChip({
   label,
@@ -99,8 +100,22 @@ export default function RestaurantScreen() {
           >
             <Feather name="arrow-left" size={20} color={colors.foreground} />
           </Pressable>
-          <View style={[styles.badge, { backgroundColor: colors.gold + "22" }]}>
-            <Text style={[styles.badgeText, { color: colors.gold }]}>{restaurant.cuisine}</Text>
+          <View style={styles.navRight}>
+            <View style={[styles.badge, { backgroundColor: colors.gold + "22" }]}>
+              <Text style={[styles.badgeText, { color: colors.gold }]}>{restaurant.cuisine}</Text>
+            </View>
+            <Pressable
+              style={[styles.shareBtn, { backgroundColor: colors.card }]}
+              onPress={async () => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                await shareText(
+                  formatRestaurantMessage(restaurant),
+                  `Dinner at ${restaurant.name}`
+                );
+              }}
+            >
+              <Feather name="share-2" size={18} color={colors.foreground} />
+            </Pressable>
           </View>
         </View>
 
@@ -311,7 +326,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 16,
   },
+  navRight: { flexDirection: "row", alignItems: "center", gap: 10 },
   backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
