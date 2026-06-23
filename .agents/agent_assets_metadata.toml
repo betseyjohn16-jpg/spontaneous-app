@@ -35,3 +35,27 @@ id = "VTyH65IqDe0-beP58pG1D"
 uri = "file://screenshots/restaurant-375x812.jpg"
 type = "image"
 title = "Info screen — phone (375×812)"
+
+[[outputs]]
+id = "Roa91z12KU6Uy3nMnx_l6"
+uri = "file://screenshots/discover-320x3000.jpg"
+type = "image"
+title = "Main screen — 320×3000 (phone width, tall)"
+
+[[outputs]]
+id = "7uMdr9O2pSM_67PbMH9Qy"
+uri = "file://screenshots/restaurant-320x3000.jpg"
+type = "image"
+title = "Info screen — 320×3000 (phone width, tall)"
+
+[[outputs]]
+id = "U29Ajh1xxUVvn9fvhoMOH"
+uri = "file://screenshots/discover-1080x3000.jpg"
+type = "image"
+title = "Main screen — 1080×3000 (wide, tall)"
+
+[[outputs]]
+id = "lg0iNaVzJ1b4PUkYTTQgx"
+uri = "file://screenshots/restaurant-1080x3000.jpg"
+type = "image"
+title = "Info screen — 1080×3000 (wide, tall)"
