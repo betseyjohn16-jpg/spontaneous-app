@@ -11,3 +11,27 @@ id = "F6kaAt_F9CD83rUUOsTgF"
 uri = "file://PRIVACY_POLICY.md"
 type = "text"
 title = "Spontaneous — Privacy Policy"
+
+[[outputs]]
+id = "RUJgHTg1ACvjoqYZ4fZ39"
+uri = "file://screenshots/discover-1024x500.jpg"
+type = "image"
+title = "Main screen — 1024×500 (tablet landscape)"
+
+[[outputs]]
+id = "3RxqdScyyCGQXCsL0JkHR"
+uri = "file://screenshots/discover-375x812.jpg"
+type = "image"
+title = "Main screen — phone (375×812)"
+
+[[outputs]]
+id = "rZmZaASYJB_Qv2GLXisAt"
+uri = "file://screenshots/restaurant-1024x500.jpg"
+type = "image"
+title = "Info screen — 1024×500 (tablet landscape)"
+
+[[outputs]]
+id = "VTyH65IqDe0-beP58pG1D"
+uri = "file://screenshots/restaurant-375x812.jpg"
+type = "image"
+title = "Info screen — phone (375×812)"

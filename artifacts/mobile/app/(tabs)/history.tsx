@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { useLayout } from "@/hooks/useLayout";
 import { useHistory, type HistoryItem } from "@/context/HistoryContext";
 import { useFavorites, type FavoriteItem } from "@/context/FavoritesContext";
 import type { RestaurantSuggestion, ActivityPlan } from "@/context/HistoryContext";
@@ -20,6 +21,7 @@ type Tab = "history" | "favorites";
 
 export default function HistoryScreen() {
   const colors = useColors();
+  const layout = useLayout();
   const insets = useSafeAreaInsets();
   const { history, clearHistory } = useHistory();
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
@@ -93,8 +95,8 @@ export default function HistoryScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.header, { paddingTop: topPad + 20 }]}>
-        <Text style={[styles.title, { color: colors.foreground }]}>Library</Text>
+      <View style={[styles.header, { paddingTop: topPad + 20, paddingHorizontal: layout.hPad }]}>
+        <Text style={[styles.title, { color: colors.foreground, fontSize: layout.fs(32) }]}>Library</Text>
         {tab === "history" && history.length > 0 && (
           <Pressable onPress={handleClearHistory}>
             <Feather name="trash-2" size={20} color={colors.mutedForeground} />
@@ -103,7 +105,7 @@ export default function HistoryScreen() {
       </View>
 
       {/* Segmented control */}
-      <View style={[styles.segmented, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.segmented, { backgroundColor: colors.card, borderColor: colors.border, marginHorizontal: layout.hPad }]}>
         {(["history", "favorites"] as Tab[]).map((t) => {
           const active = tab === t;
           const count = t === "history" ? history.length : favorites.length;
@@ -143,7 +145,7 @@ export default function HistoryScreen() {
           data={activeList}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => renderCard(item, tab === "favorites")}
-          contentContainerStyle={[styles.list, { paddingBottom: bottomPad + 100 }]}
+          contentContainerStyle={[styles.list, { paddingBottom: bottomPad + 100, paddingHorizontal: layout.hPad }]}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -153,12 +155,12 @@ export default function HistoryScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingBottom: 16 },
-  title: { fontSize: 32, fontFamily: "Inter_700Bold" },
-  segmented: { flexDirection: "row", marginHorizontal: 24, borderRadius: 14, borderWidth: 1, padding: 4, marginBottom: 16 },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 16 },
+  title: { fontFamily: "Inter_700Bold" },
+  segmented: { flexDirection: "row", borderRadius: 14, borderWidth: 1, padding: 4, marginBottom: 16 },
   segment: { flex: 1, paddingVertical: 9, borderRadius: 10, alignItems: "center" },
   segmentText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  list: { paddingHorizontal: 24, gap: 12 },
+  list: { gap: 12 },
   item: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16, borderWidth: 1, gap: 14, marginBottom: 12 },
   itemIcon: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   itemContent: { flex: 1, gap: 3 },

@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { useLayout } from "@/hooks/useLayout";
 import { useHistory } from "@/context/HistoryContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useUsage } from "@/context/UsageContext";
@@ -23,6 +24,7 @@ import type { RestaurantSuggestion, ActivityPlan } from "@/context/HistoryContex
 
 export default function DiscoverScreen() {
   const colors = useColors();
+  const layout = useLayout();
   const insets = useSafeAreaInsets();
   const { addToHistory } = useHistory();
   const { preferences } = usePreferences();
@@ -107,12 +109,13 @@ export default function DiscoverScreen() {
           backgroundColor: colors.background,
           paddingTop: topPad + 20,
           paddingBottom: bottomPad + 100,
+          paddingHorizontal: layout.hPad,
         },
       ]}
     >
-      <View style={styles.header}>
+      <View style={[styles.header, layout.contentStyle]}>
         <Text style={[styles.tagline, { color: colors.mutedForeground }]}>Leave it to chance</Text>
-        <Text style={[styles.title, { color: colors.foreground }]}>
+        <Text style={[styles.title, { color: colors.foreground, fontSize: layout.fs(46), lineHeight: layout.fs(52) }]}>
           What's{"\n"}the plan?
         </Text>
         {activeFilters > 0 && (
@@ -133,7 +136,7 @@ export default function DiscoverScreen() {
         )}
       </View>
 
-      <View style={styles.cards}>
+      <View style={[styles.cards, layout.isWide && styles.cardsRow, layout.contentStyle]}>
         <BigCard
           icon="coffee"
           label="Dinner Tonight"
@@ -143,6 +146,7 @@ export default function DiscoverScreen() {
           onPress={handleRestaurant}
           disabled={!!loadingType}
           colors={colors}
+          flex={layout.isWide}
         />
         <BigCard
           icon="map"
@@ -153,6 +157,7 @@ export default function DiscoverScreen() {
           onPress={handleActivity}
           disabled={!!loadingType}
           colors={colors}
+          flex={layout.isWide}
         />
       </View>
 
@@ -172,9 +177,10 @@ interface BigCardProps {
   onPress: () => void;
   disabled: boolean;
   colors: ReturnType<typeof useColors>;
+  flex?: boolean;
 }
 
-function BigCard({ icon, label, description, color, loading, onPress, disabled, colors }: BigCardProps) {
+function BigCard({ icon, label, description, color, loading, onPress, disabled, colors, flex }: BigCardProps) {
   const scale = React.useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -185,7 +191,7 @@ function BigCard({ icon, label, description, color, loading, onPress, disabled, 
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View style={[flex && { flex: 1 }, { transform: [{ scale }] }]}>
       <Pressable
         style={[
           styles.card,
@@ -220,7 +226,6 @@ function BigCard({ icon, label, description, color, loading, onPress, disabled, 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
     justifyContent: "space-between",
   },
   header: { gap: 8, marginBottom: 8 },
@@ -230,7 +235,7 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textTransform: "uppercase",
   },
-  title: { fontSize: 46, fontFamily: "Inter_700Bold", lineHeight: 52 },
+  title: { fontFamily: "Inter_700Bold" },
   filtersBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -243,6 +248,7 @@ const styles = StyleSheet.create({
   },
   filtersText: { fontSize: 12, fontFamily: "Inter_500Medium" },
   cards: { flex: 1, gap: 16, justifyContent: "center" },
+  cardsRow: { flexDirection: "row", gap: 16 },
   card: {
     flexDirection: "row",
     alignItems: "center",

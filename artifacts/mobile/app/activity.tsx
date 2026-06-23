@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { useLayout } from "@/hooks/useLayout";
 import type { ActivityPlan, ActivityEvent } from "@/context/HistoryContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -92,6 +93,7 @@ function EventCard({ event, isLast, colors }: { event: ExtendedEvent; isLast: bo
 
 export default function ActivityScreen() {
   const colors = useColors();
+  const layout = useLayout();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ data: string }>();
   const { preferences } = usePreferences();
@@ -139,7 +141,7 @@ export default function ActivityScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={[styles.navBar, { paddingTop: topPad + 8 }]}>
+        <View style={[styles.navBar, { paddingTop: topPad + 8, paddingHorizontal: layout.hPad }]}>
           <Pressable
             style={[styles.iconBtn, { backgroundColor: colors.card }]}
             onPress={() => { Haptics.selectionAsync(); router.back(); }}
@@ -168,11 +170,11 @@ export default function ActivityScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 110 }]}
+          contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 110, paddingHorizontal: layout.hPad }]}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.heroSection}>
-            <Text style={[styles.theme, { color: colors.foreground }]}>{plan.theme}</Text>
+            <Text style={[styles.theme, { color: colors.foreground, fontSize: layout.fs(32), lineHeight: layout.fs(38) }]}>{plan.theme}</Text>
             <Text style={[styles.tagline, { color: colors.purple }]}>{plan.tagline}</Text>
           </View>
 
@@ -198,7 +200,7 @@ export default function ActivityScreen() {
           </View>
         </ScrollView>
 
-        <View style={[styles.footer, { paddingBottom: bottomPad + 24, backgroundColor: colors.background }]}>
+        <View style={[styles.footer, { paddingBottom: bottomPad + 24, paddingHorizontal: layout.hPad, backgroundColor: colors.background }]}>
           <Pressable
             style={[styles.spinAgainBtn, { backgroundColor: colors.purple, opacity: spinning ? 0.7 : 1 }]}
             onPress={handleSpinAgain}
@@ -221,15 +223,15 @@ export default function ActivityScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingBottom: 12 },
+  navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 12 },
   navRight: { flexDirection: "row", alignItems: "center", gap: 8 },
   iconBtn: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   costBadge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
   costBadgeText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 24, gap: 24 },
+  content: { gap: 24 },
   heroSection: { gap: 8 },
-  theme: { fontSize: 32, fontFamily: "Inter_700Bold", lineHeight: 38 },
+  theme: { fontFamily: "Inter_700Bold" },
   tagline: { fontSize: 15, fontFamily: "Inter_500Medium" },
   timeline: { gap: 0 },
   eventRow: { flexDirection: "row", gap: 14 },
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
   totalSub: { fontSize: 12, fontFamily: "Inter_400Regular" },
   shareCardBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 12, borderRadius: 12, borderWidth: 1, marginTop: 4 },
   shareCardBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  footer: { paddingHorizontal: 24 },
+  footer: {},
   spinAgainBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, padding: 18, borderRadius: 18 },
   spinAgainText: { fontSize: 16, fontFamily: "Inter_700Bold", color: "#fff" },
 });

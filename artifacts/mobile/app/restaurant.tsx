@@ -22,6 +22,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
+import { useLayout } from "@/hooks/useLayout";
 import type { RestaurantSuggestion } from "@/context/HistoryContext";
 import { usePreferences } from "@/context/PreferencesContext";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -61,6 +62,7 @@ type ExtendedRestaurant = RestaurantSuggestion & {
 
 export default function RestaurantScreen() {
   const colors = useColors();
+  const layout = useLayout();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ data: string }>();
   const { preferences } = usePreferences();
@@ -175,7 +177,7 @@ export default function RestaurantScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={0}
       >
-        <View style={[styles.navBar, { paddingTop: topPad + 8 }]}>
+        <View style={[styles.navBar, { paddingTop: topPad + 8, paddingHorizontal: layout.hPad }]}>
           <Pressable
             style={[styles.iconBtn, { backgroundColor: colors.card }]}
             onPress={() => router.back()}
@@ -213,12 +215,12 @@ export default function RestaurantScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 130 }]}
+          contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 130, paddingHorizontal: layout.hPad }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.titleRow}>
-            <Text style={[styles.name, { color: colors.foreground }]}>{restaurant.name}</Text>
+            <Text style={[styles.name, { color: colors.foreground, fontSize: layout.fs(30), lineHeight: layout.fs(36) }]}>{restaurant.name}</Text>
             <View style={styles.ratingRow}>
               <Feather name="star" size={14} color={colors.gold} />
               <Text style={[styles.ratingText, { color: colors.gold }]}>
@@ -406,7 +408,7 @@ export default function RestaurantScreen() {
           )}
         </ScrollView>
 
-        <View style={[styles.footer, { paddingBottom: bottomPad + 24, backgroundColor: colors.background }]}>
+        <View style={[styles.footer, { paddingBottom: bottomPad + 24, paddingHorizontal: layout.hPad, backgroundColor: colors.background }]}>
           <Pressable
             style={[styles.reserveBtn, { backgroundColor: colors.gold, opacity: reserving ? 0.7 : 1 }]}
             onPress={handleReserve}
@@ -471,15 +473,15 @@ function Section({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingBottom: 16 },
+  navBar: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingBottom: 16 },
   navRight: { flexDirection: "row", alignItems: "center", gap: 8 },
   iconBtn: { width: 40, height: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   badge: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20 },
   badgeText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 24, gap: 16 },
+  content: { gap: 16 },
   titleRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 },
-  name: { fontSize: 30, fontFamily: "Inter_700Bold", flex: 1, lineHeight: 36 },
+  name: { fontFamily: "Inter_700Bold", flex: 1 },
   ratingRow: { flexDirection: "row", alignItems: "center", gap: 4, paddingTop: 6 },
   ratingText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
   locationRow: { flexDirection: "row", alignItems: "center", gap: 6 },
@@ -524,7 +526,7 @@ const styles = StyleSheet.create({
   reviewText: { fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 19 },
   emptyReviews: { alignItems: "center", gap: 8, paddingVertical: 24, borderRadius: 14, borderWidth: 1, borderStyle: "dashed" },
   emptyReviewsText: { fontSize: 13, fontFamily: "Inter_400Regular" },
-  footer: { paddingHorizontal: 24, gap: 10 },
+  footer: { gap: 10 },
   reserveBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, padding: 18, borderRadius: 18 },
   reserveBtnText: { fontSize: 16, fontFamily: "Inter_700Bold" },
   spinAgainBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 14, borderRadius: 14, borderWidth: 1 },
