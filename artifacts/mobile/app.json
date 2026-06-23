@@ -20,10 +20,16 @@
       "backgroundColor": "#0F0A1A",
       "package": "com.spontaneous.app",
       "versionCode": 1,
+      "targetSdkVersion": 35,
+      "minSdkVersion": 24,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#0F0A1A"
-      }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/images/icon.png"
@@ -37,7 +43,13 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Spontaneous to use your location to find nearby restaurants and activities."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
