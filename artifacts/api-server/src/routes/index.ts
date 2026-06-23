@@ -6,11 +6,13 @@ import reviewsRouter from "./reviews";
 import userRouter from "./user";
 import subscriptionRouter from "./subscription";
 import privacyRouter from "./privacy";
+import deleteAccountRouter from "./deleteAccount";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
 router.use(privacyRouter);
+router.use(deleteAccountRouter);
 router.use(suggestRouter);
 router.use(reservationsRouter);
 router.use(reviewsRouter);

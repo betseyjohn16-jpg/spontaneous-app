@@ -4,6 +4,7 @@ import * as Location from "expo-location";
 import { useAuth, useUser } from "@clerk/expo";
 import { router } from "expo-router";
 import type { Href } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -79,9 +80,43 @@ export default function PreferencesScreen() {
     ]);
   };
 
-  const { isSignedIn, signOut } = useAuth();
+  const { isSignedIn, signOut, getToken } = useAuth();
   const { user } = useUser();
   const { requestsUsed, isSubscribed, subscriptionStatus } = useUsage();
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "This permanently deletes your account and all personal data — email, subscription, and history. This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete My Account",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await getToken();
+              const domain = process.env.EXPO_PUBLIC_DOMAIN;
+              const baseUrl = domain ? `https://${domain}` : "";
+              const res = await fetch(`${baseUrl}/api/user/me`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                Alert.alert("Error", (data as { error?: string }).error ?? "Deletion failed. Please try again.");
+                return;
+              }
+              await AsyncStorage.clear();
+              await signOut();
+            } catch {
+              Alert.alert("Error", "Something went wrong. Please try again or visit the link in Settings.");
+            }
+          },
+        },
+      ],
+    );
+  };
   const activeCount = preferences.allergies.length + preferences.accessibility.length;
 
   return (
@@ -263,6 +298,16 @@ export default function PreferencesScreen() {
                 <Feather name="log-out" size={14} color={colors.mutedForeground} />
                 <Text style={[styles.signOutText, { color: colors.mutedForeground }]}>Sign out</Text>
               </Pressable>
+              <Pressable
+                style={[styles.deleteBtn, { borderColor: colors.destructive + "44" }]}
+                onPress={() => {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                  handleDeleteAccount();
+                }}
+              >
+                <Feather name="trash-2" size={14} color={colors.destructive} />
+                <Text style={[styles.deleteText, { color: colors.destructive }]}>Delete account</Text>
+              </Pressable>
             </View>
           ) : (
             <View style={{ gap: 10 }}>
@@ -428,4 +473,6 @@ const styles = StyleSheet.create({
   upgradeBtnText: { fontSize: 14, fontFamily: "Inter_700Bold" },
   signOutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 12, borderRadius: 12, borderWidth: 1 },
   signOutText: { fontSize: 13, fontFamily: "Inter_400Regular" },
+  deleteBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, padding: 12, borderRadius: 12, borderWidth: 1 },
+  deleteText: { fontSize: 13, fontFamily: "Inter_400Regular" },
 });
