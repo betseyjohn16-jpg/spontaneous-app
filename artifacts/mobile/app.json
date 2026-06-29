@@ -1,20 +1,27 @@
 {
   "expo": {
     "name": "Spontaneous",
-    "slug": "mobile",
+    "slug": "spontaneous",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "spontaneous",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "description": "Let chance pick your next restaurant or plan your entire day. AI-powered hyper-specific suggestions with reservation times, what to wear, and a full itinerary.",
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0F0A1A"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": true,
+      "bundleIdentifier": "com.spontaneous.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow Spontaneous to use your location to find nearby restaurants and activities.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow Spontaneous to use your location to find nearby restaurants and activities."
+      }
     },
     "android": {
       "backgroundColor": "#0F0A1A",
@@ -29,6 +36,16 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "*.replit.app", "pathPrefix": "/" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "web": {
@@ -54,6 +71,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
     }
   }
 }

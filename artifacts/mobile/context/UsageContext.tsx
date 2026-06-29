@@ -9,6 +9,7 @@ interface UsageContextValue {
   requestsUsed: number;
   isSubscribed: boolean;
   subscriptionStatus: string | null;
+  subscriptionInterval: "month" | "year" | null;
   canMakeRequest: boolean;
   incrementUsage: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
@@ -21,6 +22,7 @@ export function UsageProvider({ children }: { children: React.ReactNode }) {
   const [requestsUsed, setRequestsUsed] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+  const [subscriptionInterval, setSubscriptionInterval] = useState<"month" | "year" | null>(null);
 
   useEffect(() => {
     AsyncStorage.getItem(USAGE_KEY).then((val) => {
@@ -32,6 +34,7 @@ export function UsageProvider({ children }: { children: React.ReactNode }) {
     if (!isSignedIn) {
       setIsSubscribed(false);
       setSubscriptionStatus(null);
+      setSubscriptionInterval(null);
       return;
     }
     try {
@@ -44,8 +47,11 @@ export function UsageProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       setIsSubscribed(data.subscribed ?? false);
       setSubscriptionStatus(data.status ?? null);
+      const iv = data.interval;
+      setSubscriptionInterval(iv === "month" || iv === "year" ? iv : null);
     } catch {
       setIsSubscribed(false);
+      setSubscriptionInterval(null);
     }
   }, [isSignedIn, getToken]);
 
@@ -62,7 +68,7 @@ export function UsageProvider({ children }: { children: React.ReactNode }) {
   const canMakeRequest = isSubscribed || requestsUsed < FREE_LIMIT;
 
   return (
-    <UsageContext.Provider value={{ requestsUsed, isSubscribed, subscriptionStatus, canMakeRequest, incrementUsage, refreshSubscription }}>
+    <UsageContext.Provider value={{ requestsUsed, isSubscribed, subscriptionStatus, subscriptionInterval, canMakeRequest, incrementUsage, refreshSubscription }}>
       {children}
     </UsageContext.Provider>
   );
