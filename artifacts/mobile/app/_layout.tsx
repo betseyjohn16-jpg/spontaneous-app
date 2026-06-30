@@ -40,6 +40,11 @@ function RootLayoutNav() {
       <Stack.Screen name="activity" options={{ presentation: "card", headerShown: false }} />
       <Stack.Screen name="reservation" options={{ presentation: "modal", headerShown: false }} />
       <Stack.Screen name="paywall" options={{ presentation: "modal", headerShown: false }} />
+      <Stack.Screen name="partner-register" options={{ presentation: "modal", headerShown: false }} />
+      <Stack.Screen name="partner-reservations" options={{ presentation: "card", headerShown: false }} />
+      <Stack.Screen name="partner-menu" options={{ presentation: "card", headerShown: false }} />
+      <Stack.Screen name="partner-availability" options={{ presentation: "card", headerShown: false }} />
+      <Stack.Screen name="partner-settings" options={{ presentation: "card", headerShown: false }} />
     </Stack>
   );
 }

@@ -76,6 +76,18 @@ export default function TabLayout() {
             ),
         }}
       />
+      <Tabs.Screen
+        name="partner"
+        options={{
+          title: "Partner",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="storefront" tintColor={color} size={24} />
+            ) : (
+              <Feather name="briefcase" size={22} color={color} />
+            ),
+        }}
+      />
     </Tabs>
   );
 }
