@@ -16,6 +16,8 @@ tags:
     description: Reservation management
   - name: reviews
     description: Restaurant reviews
+  - name: restaurant
+    description: Restaurant partner portal
   - name: openai
     description: OpenAI AI chat, image, and audio operations
 paths:
@@ -127,6 +129,342 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReservationConfirmation"
+
+  # ─── Restaurant Partner Portal ───────────────────────────────────────────────
+
+  /restaurant/me:
+    get:
+      operationId: getMyRestaurant
+      tags: [restaurant]
+      summary: Get the authenticated restaurant owner's profile
+      responses:
+        "200":
+          description: Restaurant profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+        "404":
+          description: Not registered yet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    patch:
+      operationId: updateMyRestaurant
+      tags: [restaurant]
+      summary: Update the restaurant profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantUpdate"
+      responses:
+        "200":
+          description: Updated restaurant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+
+  /restaurant/register:
+    post:
+      operationId: registerRestaurant
+      tags: [restaurant]
+      summary: Register as a restaurant partner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantInput"
+      responses:
+        "201":
+          description: Created restaurant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+
+  /restaurant/dashboard:
+    get:
+      operationId: getRestaurantDashboard
+      tags: [restaurant]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /restaurant/availability:
+    get:
+      operationId: listAvailabilitySlots
+      tags: [restaurant]
+      summary: List all availability slots
+      responses:
+        "200":
+          description: Availability slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AvailabilitySlot"
+    post:
+      operationId: createAvailabilitySlot
+      tags: [restaurant]
+      summary: Add a new availability slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AvailabilitySlotInput"
+      responses:
+        "201":
+          description: Created slot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailabilitySlot"
+
+  /restaurant/availability/{id}:
+    delete:
+      operationId: deleteAvailabilitySlot
+      tags: [restaurant]
+      summary: Delete an availability slot
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /restaurant/blackouts:
+    get:
+      operationId: listBlackouts
+      tags: [restaurant]
+      summary: List all blackout periods
+      responses:
+        "200":
+          description: Blackout periods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Blackout"
+    post:
+      operationId: createBlackout
+      tags: [restaurant]
+      summary: Add a blackout period
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlackoutInput"
+      responses:
+        "201":
+          description: Created blackout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Blackout"
+
+  /restaurant/blackouts/{id}:
+    delete:
+      operationId: deleteBlackout
+      tags: [restaurant]
+      summary: Delete a blackout period
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /restaurant/menu:
+    get:
+      operationId: listMenuItems
+      tags: [restaurant]
+      summary: List all menu items
+      responses:
+        "200":
+          description: Menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuItem"
+    post:
+      operationId: createMenuItem
+      tags: [restaurant]
+      summary: Add a menu item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemInput"
+      responses:
+        "201":
+          description: Created menu item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+
+  /restaurant/menu/{id}:
+    patch:
+      operationId: updateMenuItem
+      tags: [restaurant]
+      summary: Update a menu item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemUpdate"
+      responses:
+        "200":
+          description: Updated menu item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+    delete:
+      operationId: deleteMenuItem
+      tags: [restaurant]
+      summary: Delete a menu item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /restaurant/reservations:
+    get:
+      operationId: listRestaurantReservations
+      tags: [restaurant]
+      summary: List all reservations for this restaurant
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [pending, accepted, declined, all]
+      responses:
+        "200":
+          description: Reservations with order items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReservationWithOrder"
+
+  /restaurant/reservations/{id}/accept:
+    post:
+      operationId: acceptReservation
+      tags: [restaurant]
+      summary: Accept a reservation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated reservation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservationWithOrder"
+
+  /restaurant/reservations/{id}/decline:
+    post:
+      operationId: declineReservation
+      tags: [restaurant]
+      summary: Decline a reservation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated reservation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReservationWithOrder"
+
+  /restaurants/{restaurantId}/availability:
+    get:
+      operationId: getPublicAvailability
+      tags: [restaurant]
+      summary: Get available slots for a restaurant (customer-facing)
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AvailabilitySlot"
+
+  /restaurants/{restaurantId}/menu:
+    get:
+      operationId: getPublicMenu
+      tags: [restaurant]
+      summary: Get menu for a restaurant (customer-facing)
+      parameters:
+        - name: restaurantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuItem"
 
   /openai/conversations:
     get:
@@ -264,6 +602,353 @@ paths:
 
 components:
   schemas:
+    # ─── Restaurant Partner Portal ──────────────────────────────────────────────
+    Restaurant:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerId:
+          type: string
+        name:
+          type: string
+        cuisine:
+          type: string
+        description:
+          type: ["string", "null"]
+        address:
+          type: string
+        phone:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        openingHours:
+          type: ["string", "null"]
+        priceRange:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - ownerId
+        - name
+        - cuisine
+        - address
+        - isActive
+        - createdAt
+
+    RestaurantInput:
+      type: object
+      properties:
+        name:
+          type: string
+        cuisine:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        openingHours:
+          type: string
+        priceRange:
+          type: string
+      required:
+        - name
+        - cuisine
+        - address
+
+    RestaurantUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        cuisine:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        openingHours:
+          type: string
+        priceRange:
+          type: string
+        isActive:
+          type: boolean
+
+    AvailabilitySlot:
+      type: object
+      properties:
+        id:
+          type: integer
+        restaurantId:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        partyMin:
+          type: integer
+        partyMax:
+          type: integer
+        capacity:
+          type: integer
+        booked:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - restaurantId
+        - date
+        - time
+        - partyMin
+        - partyMax
+        - capacity
+        - booked
+        - createdAt
+
+    AvailabilitySlotInput:
+      type: object
+      properties:
+        date:
+          type: string
+        time:
+          type: string
+        partyMin:
+          type: integer
+        partyMax:
+          type: integer
+        capacity:
+          type: integer
+      required:
+        - date
+        - time
+        - partyMin
+        - partyMax
+        - capacity
+
+    Blackout:
+      type: object
+      properties:
+        id:
+          type: integer
+        restaurantId:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        reason:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - restaurantId
+        - startDate
+        - endDate
+        - createdAt
+
+    BlackoutInput:
+      type: object
+      properties:
+        startDate:
+          type: string
+        endDate:
+          type: string
+        reason:
+          type: string
+      required:
+        - startDate
+        - endDate
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        restaurantId:
+          type: string
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        category:
+          type: string
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        isAvailable:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - restaurantId
+        - name
+        - price
+        - category
+        - isAvailable
+        - createdAt
+
+    MenuItemInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        isAvailable:
+          type: boolean
+      required:
+        - name
+        - price
+        - category
+
+    MenuItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        isAvailable:
+          type: boolean
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        menuItemId:
+          type: integer
+        menuItemName:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+        notes:
+          type: ["string", "null"]
+      required:
+        - id
+        - menuItemId
+        - menuItemName
+        - price
+        - quantity
+
+    ReservationWithOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+        restaurantId:
+          type: string
+        customerId:
+          type: ["string", "null"]
+        customerName:
+          type: string
+        customerEmail:
+          type: ["string", "null"]
+        partySize:
+          type: integer
+        date:
+          type: string
+        time:
+          type: string
+        confirmationCode:
+          type: string
+        status:
+          type: string
+          enum: [pending, accepted, declined]
+        specialRequests:
+          type: ["string", "null"]
+        orderItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalOrderAmount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - restaurantId
+        - customerName
+        - partySize
+        - date
+        - time
+        - confirmationCode
+        - status
+        - orderItems
+        - totalOrderAmount
+        - createdAt
+
+    DashboardStats:
+      type: object
+      properties:
+        todayReservations:
+          type: integer
+        pendingReservations:
+          type: integer
+        totalReservations:
+          type: integer
+        totalMenuItems:
+          type: integer
+        upcomingReservations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReservationWithOrder"
+      required:
+        - todayReservations
+        - pendingReservations
+        - totalReservations
+        - totalMenuItems
+        - upcomingReservations
+
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    # ─── Existing schemas ───────────────────────────────────────────────────────
     Review:
       type: object
       properties:

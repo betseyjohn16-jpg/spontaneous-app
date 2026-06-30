@@ -136,6 +136,380 @@ export const MakeReservationResponse = zod.object({
 
 
 /**
+ * @summary Get the authenticated restaurant owner's profile
+ */
+export const GetMyRestaurantResponse = zod.object({
+  "id": zod.string(),
+  "ownerId": zod.string(),
+  "name": zod.string(),
+  "cuisine": zod.string(),
+  "description": zod.string().nullish(),
+  "address": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "openingHours": zod.string().nullish(),
+  "priceRange": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update the restaurant profile
+ */
+export const UpdateMyRestaurantBody = zod.object({
+  "name": zod.string().optional(),
+  "cuisine": zod.string().optional(),
+  "description": zod.string().optional(),
+  "address": zod.string().optional(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "openingHours": zod.string().optional(),
+  "priceRange": zod.string().optional(),
+  "isActive": zod.boolean().optional()
+})
+
+export const UpdateMyRestaurantResponse = zod.object({
+  "id": zod.string(),
+  "ownerId": zod.string(),
+  "name": zod.string(),
+  "cuisine": zod.string(),
+  "description": zod.string().nullish(),
+  "address": zod.string(),
+  "phone": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "openingHours": zod.string().nullish(),
+  "priceRange": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Register as a restaurant partner
+ */
+export const RegisterRestaurantBody = zod.object({
+  "name": zod.string(),
+  "cuisine": zod.string(),
+  "description": zod.string().optional(),
+  "address": zod.string(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "openingHours": zod.string().optional(),
+  "priceRange": zod.string().optional()
+})
+
+
+/**
+ * @summary Get dashboard summary stats
+ */
+export const GetRestaurantDashboardResponse = zod.object({
+  "todayReservations": zod.number(),
+  "pendingReservations": zod.number(),
+  "totalReservations": zod.number(),
+  "totalMenuItems": zod.number(),
+  "upcomingReservations": zod.array(zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "customerId": zod.string().nullish(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string().nullish(),
+  "partySize": zod.number(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "confirmationCode": zod.string(),
+  "status": zod.enum(['pending', 'accepted', 'declined']),
+  "specialRequests": zod.string().nullish(),
+  "orderItems": zod.array(zod.object({
+  "id": zod.number(),
+  "menuItemId": zod.number(),
+  "menuItemName": zod.string(),
+  "price": zod.number(),
+  "quantity": zod.number(),
+  "notes": zod.string().nullish()
+})),
+  "totalOrderAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary List all availability slots
+ */
+export const ListAvailabilitySlotsResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "partyMin": zod.number(),
+  "partyMax": zod.number(),
+  "capacity": zod.number(),
+  "booked": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAvailabilitySlotsResponse = zod.array(ListAvailabilitySlotsResponseItem)
+
+
+/**
+ * @summary Add a new availability slot
+ */
+export const CreateAvailabilitySlotBody = zod.object({
+  "date": zod.string(),
+  "time": zod.string(),
+  "partyMin": zod.number(),
+  "partyMax": zod.number(),
+  "capacity": zod.number()
+})
+
+
+/**
+ * @summary Delete an availability slot
+ */
+export const DeleteAvailabilitySlotParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all blackout periods
+ */
+export const ListBlackoutsResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "startDate": zod.string(),
+  "endDate": zod.string(),
+  "reason": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const ListBlackoutsResponse = zod.array(ListBlackoutsResponseItem)
+
+
+/**
+ * @summary Add a blackout period
+ */
+export const CreateBlackoutBody = zod.object({
+  "startDate": zod.string(),
+  "endDate": zod.string(),
+  "reason": zod.string().optional()
+})
+
+
+/**
+ * @summary Delete a blackout period
+ */
+export const DeleteBlackoutParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all menu items
+ */
+export const ListMenuItemsResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "price": zod.number(),
+  "category": zod.string(),
+  "dietaryTags": zod.array(zod.string()).optional(),
+  "isAvailable": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+export const ListMenuItemsResponse = zod.array(ListMenuItemsResponseItem)
+
+
+/**
+ * @summary Add a menu item
+ */
+export const CreateMenuItemBody = zod.object({
+  "name": zod.string(),
+  "description": zod.string().optional(),
+  "price": zod.number(),
+  "category": zod.string(),
+  "dietaryTags": zod.array(zod.string()).optional(),
+  "isAvailable": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Update a menu item
+ */
+export const UpdateMenuItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateMenuItemBody = zod.object({
+  "name": zod.string().optional(),
+  "description": zod.string().optional(),
+  "price": zod.number().optional(),
+  "category": zod.string().optional(),
+  "dietaryTags": zod.array(zod.string()).optional(),
+  "isAvailable": zod.boolean().optional()
+})
+
+export const UpdateMenuItemResponse = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "price": zod.number(),
+  "category": zod.string(),
+  "dietaryTags": zod.array(zod.string()).optional(),
+  "isAvailable": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a menu item
+ */
+export const DeleteMenuItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List all reservations for this restaurant
+ */
+export const ListRestaurantReservationsQueryParams = zod.object({
+  "status": zod.enum(['pending', 'accepted', 'declined', 'all']).optional()
+})
+
+export const ListRestaurantReservationsResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "customerId": zod.string().nullish(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string().nullish(),
+  "partySize": zod.number(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "confirmationCode": zod.string(),
+  "status": zod.enum(['pending', 'accepted', 'declined']),
+  "specialRequests": zod.string().nullish(),
+  "orderItems": zod.array(zod.object({
+  "id": zod.number(),
+  "menuItemId": zod.number(),
+  "menuItemName": zod.string(),
+  "price": zod.number(),
+  "quantity": zod.number(),
+  "notes": zod.string().nullish()
+})),
+  "totalOrderAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListRestaurantReservationsResponse = zod.array(ListRestaurantReservationsResponseItem)
+
+
+/**
+ * @summary Accept a reservation
+ */
+export const AcceptReservationParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const AcceptReservationResponse = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "customerId": zod.string().nullish(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string().nullish(),
+  "partySize": zod.number(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "confirmationCode": zod.string(),
+  "status": zod.enum(['pending', 'accepted', 'declined']),
+  "specialRequests": zod.string().nullish(),
+  "orderItems": zod.array(zod.object({
+  "id": zod.number(),
+  "menuItemId": zod.number(),
+  "menuItemName": zod.string(),
+  "price": zod.number(),
+  "quantity": zod.number(),
+  "notes": zod.string().nullish()
+})),
+  "totalOrderAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Decline a reservation
+ */
+export const DeclineReservationParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeclineReservationResponse = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "customerId": zod.string().nullish(),
+  "customerName": zod.string(),
+  "customerEmail": zod.string().nullish(),
+  "partySize": zod.number(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "confirmationCode": zod.string(),
+  "status": zod.enum(['pending', 'accepted', 'declined']),
+  "specialRequests": zod.string().nullish(),
+  "orderItems": zod.array(zod.object({
+  "id": zod.number(),
+  "menuItemId": zod.number(),
+  "menuItemName": zod.string(),
+  "price": zod.number(),
+  "quantity": zod.number(),
+  "notes": zod.string().nullish()
+})),
+  "totalOrderAmount": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get available slots for a restaurant (customer-facing)
+ */
+export const GetPublicAvailabilityParams = zod.object({
+  "restaurantId": zod.coerce.string()
+})
+
+export const GetPublicAvailabilityResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "date": zod.string(),
+  "time": zod.string(),
+  "partyMin": zod.number(),
+  "partyMax": zod.number(),
+  "capacity": zod.number(),
+  "booked": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const GetPublicAvailabilityResponse = zod.array(GetPublicAvailabilityResponseItem)
+
+
+/**
+ * @summary Get menu for a restaurant (customer-facing)
+ */
+export const GetPublicMenuParams = zod.object({
+  "restaurantId": zod.coerce.string()
+})
+
+export const GetPublicMenuResponseItem = zod.object({
+  "id": zod.number(),
+  "restaurantId": zod.string(),
+  "name": zod.string(),
+  "description": zod.string().nullish(),
+  "price": zod.number(),
+  "category": zod.string(),
+  "dietaryTags": zod.array(zod.string()).optional(),
+  "isAvailable": zod.boolean(),
+  "createdAt": zod.coerce.date()
+})
+export const GetPublicMenuResponse = zod.array(GetPublicMenuResponseItem)
+
+
+/**
  * @summary List all conversations
  */
 export const ListOpenaiConversationsResponseItem = zod.object({

@@ -5,6 +5,167 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface Restaurant {
+  id: string;
+  ownerId: string;
+  name: string;
+  cuisine: string;
+  /** @nullable */
+  description?: string | null;
+  address: string;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  openingHours?: string | null;
+  /** @nullable */
+  priceRange?: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface RestaurantInput {
+  name: string;
+  cuisine: string;
+  description?: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  openingHours?: string;
+  priceRange?: string;
+}
+
+export interface RestaurantUpdate {
+  name?: string;
+  cuisine?: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  openingHours?: string;
+  priceRange?: string;
+  isActive?: boolean;
+}
+
+export interface AvailabilitySlot {
+  id: number;
+  restaurantId: string;
+  date: string;
+  time: string;
+  partyMin: number;
+  partyMax: number;
+  capacity: number;
+  booked: number;
+  createdAt: string;
+}
+
+export interface AvailabilitySlotInput {
+  date: string;
+  time: string;
+  partyMin: number;
+  partyMax: number;
+  capacity: number;
+}
+
+export interface Blackout {
+  id: number;
+  restaurantId: string;
+  startDate: string;
+  endDate: string;
+  /** @nullable */
+  reason?: string | null;
+  createdAt: string;
+}
+
+export interface BlackoutInput {
+  startDate: string;
+  endDate: string;
+  reason?: string;
+}
+
+export interface MenuItem {
+  id: number;
+  restaurantId: string;
+  name: string;
+  /** @nullable */
+  description?: string | null;
+  price: number;
+  category: string;
+  dietaryTags?: string[];
+  isAvailable: boolean;
+  createdAt: string;
+}
+
+export interface MenuItemInput {
+  name: string;
+  description?: string;
+  price: number;
+  category: string;
+  dietaryTags?: string[];
+  isAvailable?: boolean;
+}
+
+export interface MenuItemUpdate {
+  name?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  dietaryTags?: string[];
+  isAvailable?: boolean;
+}
+
+export interface OrderItem {
+  id: number;
+  menuItemId: number;
+  menuItemName: string;
+  price: number;
+  quantity: number;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export type ReservationWithOrderStatus = typeof ReservationWithOrderStatus[keyof typeof ReservationWithOrderStatus];
+
+
+export const ReservationWithOrderStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  declined: 'declined',
+} as const;
+
+export interface ReservationWithOrder {
+  id: number;
+  restaurantId: string;
+  /** @nullable */
+  customerId?: string | null;
+  customerName: string;
+  /** @nullable */
+  customerEmail?: string | null;
+  partySize: number;
+  date: string;
+  time: string;
+  confirmationCode: string;
+  status: ReservationWithOrderStatus;
+  /** @nullable */
+  specialRequests?: string | null;
+  orderItems: OrderItem[];
+  totalOrderAmount: number;
+  createdAt: string;
+}
+
+export interface DashboardStats {
+  todayReservations: number;
+  pendingReservations: number;
+  totalReservations: number;
+  totalMenuItems: number;
+  upcomingReservations: ReservationWithOrder[];
+}
+
+export interface ApiError {
+  error: string;
+}
+
 export interface Review {
   id: number;
   restaurantId: string;
@@ -183,4 +344,18 @@ export interface OpenaiError {
 export type GetReviewsParams = {
 restaurantId: string;
 };
+
+export type ListRestaurantReservationsParams = {
+status?: ListRestaurantReservationsStatus;
+};
+
+export type ListRestaurantReservationsStatus = typeof ListRestaurantReservationsStatus[keyof typeof ListRestaurantReservationsStatus];
+
+
+export const ListRestaurantReservationsStatus = {
+  pending: 'pending',
+  accepted: 'accepted',
+  declined: 'declined',
+  all: 'all',
+} as const;
 

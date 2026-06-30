@@ -7,6 +7,7 @@ import userRouter from "./user";
 import subscriptionRouter from "./subscription";
 import privacyRouter from "./privacy";
 import deleteAccountRouter from "./deleteAccount";
+import restaurantRouter from "./restaurant";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(reservationsRouter);
 router.use(reviewsRouter);
 router.use(userRouter);
 router.use(subscriptionRouter);
+router.use(restaurantRouter);
 
 export default router;
